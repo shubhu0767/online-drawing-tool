@@ -4,6 +4,7 @@ const COLORS = {
     PURPLE: 'purple',
     BLUE: 'blue',
     YELLOW: 'yellow',
+    WHITE: 'white',
 };
 
 const MENU_ITEMS = {

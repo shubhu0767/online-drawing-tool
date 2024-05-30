@@ -12,12 +12,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 const MenuBar = () => {
   const selectedMenu = useSelector((state) => state.menu.activeMenu);
-  const [selectedOption, setSelectedOption] = useState(0);
   const dispatch = useDispatch();
 
 
-  const handleSelectOption = (num: number, menuName: string) => {
-    setSelectedOption(num);
+  const handleSelectOption = (menuName: string) => {
     if (MENU_ITEMS.ERASER === menuName || MENU_ITEMS.PENCIL === menuName) {
       dispatch(selectActiveMenuItem(menuName));
     } else {
@@ -33,7 +31,7 @@ const MenuBar = () => {
           <button
             onClick={() => handleSelectOption(item.id)}
             className={`p-4 border-2 cursor-pointer ${
-              selectedOption === item.id && "bg-slate-200"
+              selectedMenu === item.id && "bg-slate-200"
             } hover:bg-slate-300`}
           >
             <{item.name} />
@@ -41,41 +39,41 @@ const MenuBar = () => {
         </Fragment>
       )})} */}
       <button
-        onClick={() => handleSelectOption(1, MENU_ITEMS.PENCIL)}
+        onClick={() => handleSelectOption(MENU_ITEMS.PENCIL)}
         className={`p-4 border-2 cursor-pointer ${
-          selectedOption === 1 && "bg-slate-200"
+          selectedMenu === MENU_ITEMS.PENCIL && "bg-slate-200"
         } hover:bg-slate-300`}
       >
         <FaPencilAlt />
       </button>
       <button
-        onClick={() => handleSelectOption(2, MENU_ITEMS.ERASER)}
+        onClick={() => handleSelectOption(MENU_ITEMS.ERASER)}
         className={`p-4 border-2 cursor-pointer ${
-          selectedOption === 2 && "bg-slate-200"
+          selectedMenu === MENU_ITEMS.ERASER && "bg-slate-200"
         } hover:bg-slate-300`}
       >
         <FaEraser />
       </button>
       <button
-        onClick={() => handleSelectOption(null, MENU_ITEMS.UNDO)}
+        onClick={() => handleSelectOption(MENU_ITEMS.UNDO)}
         className={`p-4 border-2 cursor-pointer ${
-          selectedOption === 4 && "bg-slate-200"
+          selectedMenu === MENU_ITEMS.UNDO && "bg-slate-200"
         } hover:bg-slate-300`}
       >
         <RiArrowGoBackFill />
       </button>
       <button
-        onClick={() => handleSelectOption(null, MENU_ITEMS.REDO)}
+        onClick={() => handleSelectOption(MENU_ITEMS.REDO)}
         className={`p-4 border-2 cursor-pointer ${
-          selectedOption === 3 && "bg-slate-200"
+          selectedMenu === MENU_ITEMS.REDO && "bg-slate-200"
         } hover:bg-slate-300`}
       >
         <RiArrowGoForwardFill />
       </button>
       <button
-        onClick={() => handleSelectOption(null, MENU_ITEMS.DOWNLOAD)}
+        onClick={() => handleSelectOption(MENU_ITEMS.DOWNLOAD)}
         className={`p-4 border-2 cursor-pointer ${
-          selectedOption === 5 && "bg-slate-200"
+          selectedMenu === MENU_ITEMS.DOWNLOAD && "bg-slate-200"
         } hover:bg-slate-300`}
       >
         <FaFileDownload />
