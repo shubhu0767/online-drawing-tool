@@ -7,20 +7,45 @@ import { socket } from "@/socket";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+interface MenuState {
+  activeMenu: string;
+  actionMenu: string | null;
+}
+
+interface PencilOrEraserState {
+  color: string;
+  size: number | string;
+}
+
+interface SettingState {
+  PENCIL: PencilOrEraserState;
+  ERASER: PencilOrEraserState;
+  UNDO: {};
+  REDO: {};
+  DOWNLOAD: {};
+}
+export interface RootState {
+  menu: MenuState;
+  setting: SettingState;
+}
 
 const Board = () => {
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const shouldDraw = useRef(false);
-  const drawHistory = useRef([]);
+  const drawHistory = useRef<ImageData[]>([]);
   const historyPointer = useRef(0);
   const dispatch = useDispatch();
-  const { activeMenu, actionMenu } = useSelector((state) => state.menu);
-  const { color, size } = useSelector((state) => state.setting[activeMenu]);
+  const { activeMenu, actionMenu } = useSelector(
+    (state: RootState) => state.menu
+  );
+  const { color, size } = useSelector(
+    (state: any) => state.setting[activeMenu]
+  );
 
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
+    const context: CanvasRenderingContext2D | null = canvas?.getContext("2d");
 
     if (actionMenu === MENU_ITEMS.DOWNLOAD) {
       const URL = canvas.toDataURL();
@@ -28,21 +53,28 @@ const Board = () => {
       anchor.href = URL;
       anchor.download = "sketch.jpg";
       anchor.click();
-    } else if (actionMenu === MENU_ITEMS.UNDO || actionMenu === MENU_ITEMS.REDO) {
-      if (historyPointer.current > 0 && actionMenu === MENU_ITEMS.UNDO) historyPointer.current -= 1
-      if (historyPointer.current < drawHistory.current.length - 1 && actionMenu === MENU_ITEMS.REDO) historyPointer.current += 1
-      const imageData = drawHistory.current[historyPointer.current]
-      context.putImageData(imageData, 0, 0);
+    } else if (
+      actionMenu === MENU_ITEMS.UNDO ||
+      actionMenu === MENU_ITEMS.REDO
+    ) {
+      if (historyPointer.current > 0 && actionMenu === MENU_ITEMS.UNDO)
+        historyPointer.current -= 1;
+      if (
+        historyPointer.current < drawHistory.current.length - 1 &&
+        actionMenu === MENU_ITEMS.REDO
+      )
+        historyPointer.current += 1;
+      const imageData = drawHistory.current[historyPointer.current];
+      context?.putImageData(imageData, 0, 0);
     }
     dispatch(selectActionMenuItem(null));
   }, [actionMenu]);
 
   useEffect(() => {
-    console.log('change config');
-    
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
+    const context = canvas?.getContext("2d");
+    if (!context) return;
 
     const changeConfig = () => {
       context.strokeStyle = color;
@@ -56,6 +88,7 @@ const Board = () => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
+    if (!context) return;
 
     // when mounting
     canvas.width = window.innerWidth;
@@ -74,7 +107,7 @@ const Board = () => {
     const handleMouseDown = (e: MouseEvent) => {
       shouldDraw.current = true;
       beginPath(e.clientX, e.clientY);
-      socket.emit('beginPath', {x: e.clientX, y: e.clientY});
+      socket.emit("beginPath", { x: e.clientX, y: e.clientY });
     };
     const handleMouseUp = (e: MouseEvent) => {
       shouldDraw.current = false;
@@ -85,19 +118,19 @@ const Board = () => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!shouldDraw.current) return;
       drawLine(e.clientX, e.clientY);
-      socket.emit('drawLine', {x: e.clientX, y: e.clientY});
+      socket.emit("drawLine", { x: e.clientX, y: e.clientY });
     };
 
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mouseup", handleMouseUp);
     canvas.addEventListener("mousemove", handleMouseMove);
 
-    socket.on('beginPath', (data) => {
+    socket.on("beginPath", (data) => {
       beginPath(data.x, data.y);
       context.moveTo(data.x, data.y);
     });
 
-    socket.on('drawLine', (data) => {
+    socket.on("drawLine", (data) => {
       drawLine(data.x, data.y);
       context.moveTo(data.x, data.y);
     });

@@ -5,12 +5,20 @@ import { COLORS, MENU_ITEMS } from "@/constant";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveColor, selectBrushSize } from "@/slices/settingSlice";
 import { socket } from "@/socket";
+import { RootState } from "../Board";
 
+interface ConfigState {
+  menu: string;
+  color: string;
+  size: string | number;
+}
 
 const SettingBox = () => {
   const [showColorOptions, setShowColorOptions] = useState(true);
-  const selectedMenu = useSelector((state) => state.menu.activeMenu);
-  const { color, size } = useSelector((state) => state.setting[selectedMenu]);
+  const selectedMenu = useSelector((state: RootState) => state.menu.activeMenu);
+  const { color, size } = useSelector(
+    (state: any) => state.setting[selectedMenu]
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -21,11 +29,11 @@ const SettingBox = () => {
 
     return () => {
       socket.off("changeConfig", handleChangeConfig);
-    };    
+    };
   }, [selectedMenu]);
 
-  const handleChangeConfig = (config) => {
-    dispatch(selectBrushSize({menu: config.menu, size:config.size}));
+  const handleChangeConfig = (config: ConfigState) => {
+    dispatch(selectBrushSize({ menu: config.menu, size: config.size }));
     dispatch(selectActiveColor({ menu: config.menu, color: config.color }));
   };
 

@@ -9,11 +9,11 @@ import React, { Fragment, useState } from "react";
 import { FaPencilAlt, FaEraser, FaFileDownload } from "react-icons/fa";
 import { RiArrowGoForwardFill, RiArrowGoBackFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../Board";
 
 const MenuBar = () => {
-  const selectedMenu = useSelector((state) => state.menu.activeMenu);
+  const selectedMenu = useSelector((state: RootState) => state.menu.activeMenu);
   const dispatch = useDispatch();
-
 
   const handleSelectOption = (menuName: string) => {
     if (MENU_ITEMS.ERASER === menuName || MENU_ITEMS.PENCIL === menuName) {
@@ -25,19 +25,6 @@ const MenuBar = () => {
 
   return (
     <div className="flex absolute left-[40vw] max-w-xs mt-6 gap-2 justify-center ">
-      {/* {menu.map((item) => {
-        return (
-        <Fragment key={item.id}>
-          <button
-            onClick={() => handleSelectOption(item.id)}
-            className={`p-4 border-2 cursor-pointer ${
-              selectedMenu === item.id && "bg-slate-200"
-            } hover:bg-slate-300`}
-          >
-            <{item.name} />
-          </button>
-        </Fragment>
-      )})} */}
       <button
         onClick={() => handleSelectOption(MENU_ITEMS.PENCIL)}
         className={`p-4 border-2 cursor-pointer ${
